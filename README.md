@@ -10,9 +10,13 @@ A local Dash web app for exploring EV charging infrastructure and coastal spatia
 pip install -r requirements.txt
 ```
 
-3. Run the app:
+3. Run the Open Data Map app:
 ```bash
 python evapp.py
+```
+3. Run the ONS (oct-2024) app:
+```bash
+python ons_evapp.py
 ```
 
 Then open your browser to: [http://127.0.0.1:8050](http://127.0.0.1:8050)
