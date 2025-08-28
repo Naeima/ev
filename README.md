@@ -1,6 +1,6 @@
 # EV Dashboards South Wales and West Midlands (UK)
 
-A local Dash web app for exploring EV charging infrastructure and coastal spatial data in South Wales.
+A local Dash web app for exploring EV charging infrastructure and coastal spatial data in South Wales and another one for West Midlands.
 
 ## 🚀 How to Run
 
@@ -25,8 +25,18 @@ python ons_evapp_west_midlands.py
 
 Then open your browser to: [http://127.0.0.1:8050](http://127.0.0.1:8050)
 
+docs: add note on resolving run error
+If you encounter an error when running the app locally, replace 
+`app.run_server(debug=True)` with `app.run(debug=True)`.  
+`app.run_server()` is Dash-specific, while `app.run()` is Flask’s method.  
+Some setups require the Flask call for compatibility.
+
 ## 📁 Contents
 
-- `app.py`: Main Dash app
-- `ev_charger_map.html`: Pre-rendered interactive Folium map
-- `requirements.txt`: Python dependencies
+### Files Included  
+
+- **`evapp.py`** – South Wales Open Map Data application  
+- **`ons_evapp.py`** – Office for National Statistics (ONS, Oct 2024) Dash application for South Wales  
+- **`ons_evapp_west_midlands.py`** – Office for National Statistics (ONS, Oct 2024) Dash application for the West Midlands  
+- **`requirements.txt`** – Python dependencies  
+
