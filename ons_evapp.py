@@ -597,18 +597,18 @@ def render_map_html_ev(df_map, show_fraw, show_fmfp, show_live, show_ctx, near_t
         add_wms_group(m, LIVE_WMS, True, 0.65)
         add_live_wfs_popups(m, df_map)
     folium.LayerControl(collapsed=True).add_to(m)
-    # Charger legend as above (no near_threshold text because we use tri-state)
-    legend_html = """
-    <div style=\"position: fixed; bottom:20px; left:20px; z-index:9999; background:white; padding:10px 12px; border:1px solid #ccc; border-radius:6px; font-size:13px;\">
-      <b>Chargers</b>
-      <div style=\"margin-top:6px\"><span style=\"display:inline-block;width:12px;height:12px;background:#28a745;margin-right:6px;\"></span> Operational & safe</div>
-      <div><span style=\"display:inline-block;width:12px;height:12px;background:#fd7e14;margin-right:6px;\"></span> Operational & at risk</div>
-      <div><span style=\"display:inline-block;width:12px;height:12px;background:#6c757d;margin-right:6px;\"></span> Not operational & safe</div>
-      <div><span style=\"display:inline-block;width:12px;height:12px;background:#dc3545;margin-right:6px;\"></span> Not operational & at risk</div>
-      <div><span style=\"display:inline-block;width:12px;height:12px;background:#d3d3d3;margin-right:6px;\"></span> Unknown risk</div>
-    </div>
-    """
-    m.get_root().html.add_child(folium.Element(legend_html))
+    # # Charger legend as above (no near_threshold text because we use tri-state)
+    # legend_html = """
+    # <div style=\"position: fixed; bottom:20px; left:20px; z-index:9999; background:white; padding:10px 12px; border:1px solid #ccc; border-radius:6px; font-size:13px;\">
+    #   <b>Chargers</b>
+    #   <div style=\"margin-top:6px\"><span style=\"display:inline-block;width:12px;height:12px;background:#28a745;margin-right:6px;\"></span> Operational & safe</div>
+    #   <div><span style=\"display:inline-block;width:12px;height:12px;background:#fd7e14;margin-right:6px;\"></span> Operational & at risk</div>
+    #   <div><span style=\"display:inline-block;width:12px;height:12px;background:#6c757d;margin-right:6px;\"></span> Not operational & safe</div>
+    #   <div><span style=\"display:inline-block;width:12px;height:12px;background:#dc3545;margin-right:6px;\"></span> Not operational & at risk</div>
+    #   <div><span style=\"display:inline-block;width:12px;height:12px;background:#d3d3d3;margin-right:6px;\"></span> Unknown risk</div>
+    # </div>
+    # """
+    # m.get_root().html.add_child(folium.Element(legend_html))
     return m.get_root().render()
 
 # =========================
