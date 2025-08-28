@@ -25,7 +25,7 @@ python ons_evapp_west_midlands.py
 
 Then open your browser to: [http://127.0.0.1:8050](http://127.0.0.1:8050)
 
-docs: add note on resolving run error
+docs: 
 If you encounter an error when running the app locally, replace 
 `app.run_server(debug=True)` with `app.run(debug=True)`.  
 `app.run_server()` is Dash-specific, while `app.run()` is Flask’s method.  
