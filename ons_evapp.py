@@ -999,4 +999,4 @@ def _wx_split(loc, _n):
 # Run
 # -------------------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run_server(debug=True)
