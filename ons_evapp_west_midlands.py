@@ -85,10 +85,12 @@ if not all([lat_col, lon_col, town_col]):
     raise ValueError(f"Sheet is missing required columns (case-insensitive): {missing}")
 
 # Optional / nice-to-have columns
-date_col   = _col(df, "dateCreated", "DateCreated", "installedOn", "InstalledOn")
-op_col     = _col(df, "deviceControllerName", "Operator", "operator")
+date_col = _col(df, "dateCreated", "DateCreated", "installedOn", "InstalledOn")
+op_col   = _col(df, "deviceControllerName", "Operator", "operator")
 status_col = _col(df, "chargeDeviceStatus", "Status", "status")
 pay_col    = _col(df, "paymentRequired", "PaymentRequired", "payment", "Payment")
+pc_col     = _col(df, "postcode", "Postcode", "post code", "Post Code",
+                  "postal_code", "PostalCode", "ZIP", "Zip", "zip code", "ZipCode")
 
 target_towns = [
     "Birmingham","Coventry","Wolverhampton",
@@ -102,6 +104,15 @@ target_towns = [
 df['Latitude']  = pd.to_numeric(df[lat_col], errors='coerce')
 df['Longitude'] = pd.to_numeric(df[lon_col], errors='coerce')
 df['Town']      = df[town_col].astype(str).str.strip().str.title()
+
+# Postcode normalisation
+def normalize_uk_postcode(v):
+    if pd.isna(v) or str(v).strip() == "":
+        return "Unknown"
+    s = re.sub(r"[^A-Za-z0-9]", "", str(v)).upper()
+    return f"{s[:-3]} {s[-3:]}" if len(s) > 3 else s
+
+df['Postcode'] = df[pc_col].apply(normalize_uk_postcode) if pc_col else 'Unknown'
 
 # =========================
 # Robust date parsing (explicit formats first; silent mixed fallback)
@@ -139,11 +150,10 @@ def parse_dates_series(s: pd.Series) -> pd.Series:
             break
 
     if mask_remaining.any():
-        # pandas >= 2.0 supports format="mixed"; TypeError on older versions
         try:
             parsed_fallback = pd.to_datetime(
                 s_clean.where(mask_remaining),
-                format="mixed",
+                format="mixed",     # pandas >= 2.0
                 dayfirst=True,
                 errors="coerce",
                 utc=False
@@ -156,6 +166,7 @@ def parse_dates_series(s: pd.Series) -> pd.Series:
                 except Exception:
                     return pd.NaT
             parsed_fallback = s_clean.where(mask_remaining).apply(_du).astype("datetime64[ns]")
+
         hits = parsed_fallback.notna()
         out = out.where(~hits, parsed_fallback)
 
@@ -170,7 +181,6 @@ df['Operator'] = (df[op_col] if op_col else pd.Series(index=df.index)).fillna("U
 df['Status']   = (df[status_col] if status_col else pd.Series(index=df.index)).fillna("Unknown")
 
 if pay_col:
-    # accept bools or strings like "Yes/No", "Y/N", "True/False"
     def norm_pay(v):
         if pd.isna(v): return 'Unknown'
         if isinstance(v, bool): return 'Yes' if v else 'No'
@@ -605,16 +615,28 @@ def build_map(selected_severities=None, floods=None):
                             text_color="white", inner_icon_style="font-size:22px;padding-top:2px;")
 
     for _, row in west_midlands_gdf.iterrows():
-        label = row['RiskLabel']; color = row['RiskColor']
+        label = row['RiskLabel']
+        color = row['RiskColor']
+
         popup_html = (f"<b>Town/City:</b> {row['Town']}<br>"
+                      f"<b>Postcode:</b> {row['Postcode']}<br>"
                       f"<b>Status:</b> {row['Status']}<br>"
                       f"<b>Operator:</b> {row['Operator']}<br>"
                       f"<b>Zone:</b> {label}")
-        marker = folium.Marker(location=[row['Latitude'], row['Longitude']],
-                               icon=make_icon(color), popup=folium.Popup(popup_html, max_width=420))
-        if color == RED: red_cluster.add_child(marker)
-        elif color == AMBER: amber_cluster.add_child(marker)
-        else: safe_cluster.add_child(marker)
+
+        marker = folium.Marker(
+            location=[row['Latitude'], row['Longitude']],
+            icon=make_icon(color),
+            popup=folium.Popup(popup_html, max_width=420),
+            tooltip=f"{row['Town']} • {row['Postcode']} • {label}"
+        )
+
+        if color == RED:
+            red_cluster.add_child(marker)
+        elif color == AMBER:
+            amber_cluster.add_child(marker)
+        else:
+            safe_cluster.add_child(marker)
 
     red_group.add_to(m); amber_group.add_to(m); safe_group.add_to(m)
     Draw(export=True).add_to(m)
@@ -746,7 +768,7 @@ app.layout = html.Div([
     html.Div([
         html.Label([
             html.Span(
-                "Filter EA Flood Severity (live polygons):ℹ️",
+                "Filter EA Flood Severity (live polygons): ℹ️",
                 title=("Severe flood warning (1) · Flood warning (2) · Flood alert (3) · Warning no longer in force (4)\n"
                        "Colours use RAG: 1–2 Red, 3 Amber, 4 Green."),
                 style={'textDecoration': 'underline', 'cursor': 'help'}
