@@ -35,8 +35,8 @@ LOCAL_EV_CSV = "south_wales_ev.csv"
 CACHE_DIR = ".cache_wfs"; os.makedirs(CACHE_DIR, exist_ok=True)
 
 # Logo from Google Drive (provided by you)
-LOGO_GDRIVE_FILE_OR_URL = "https://drive.google.com/file/d/173EoNipH7ifFAMBbuvXfycO9nRmyQHVm/view?usp=sharing"
-LOGO_CACHE_PATH = os.path.join(CACHE_DIR, "cleets_logo.png")
+LOGO_GDRIVE_FILE_OR_URL = "https://drive.google.com/file/d/1QLQPln4dRyWXh65E5ua_rC3CGTChwKxc/view?usp=sharing"
+LOGO_CACHE_PATH = os.path.join(CACHE_DIR, "cleets_logo-01.png")
 
 OWS_BASE = "https://datamap.gov.wales/geoserver/ows"
 
@@ -833,12 +833,12 @@ def build_kml(route_data: dict) -> str:
 # ---------- Layout (iframe uses srcDoc now) ----------
 app.layout = html.Div([
     html.Div([
-        html.Img(src="/__logo", style={"height":"240px"}),  # bigger logo
-        html.H1("South Wales EV – Chargers coloured by Flood Model Zone (FMfP/FRAW) + Routing & Weather",
-                style={"margin":"0"})
-    ], style={"display":"flex","alignItems":"center","gap":"12px","marginBottom":"10px"}),
+        html.Img(src="/__logo", style={"height":"200px", "marginRight":"8px"}),  
+        html.H1("South Wales EV – Chargers coloured by Flood Model Zone + Routing & Weather",
+                style={"margin":"4"})
+    ], style={"display":"flex","alignItems":"center","gap":"100px","marginBottom":"8px"}),
 
-    html.H2("A) Chargers & Flood Overlays"),
+    html.H2("A) Chargers & Flood Overlays", style={"margin":"24px 7 8px"}),
     html.Div([
         html.Div([html.Label("Town(s)"),
             dcc.Dropdown(id="f-town",
@@ -1207,4 +1207,4 @@ def _download_kml(_n, route_data):
 # Run
 # -------------------------
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)
